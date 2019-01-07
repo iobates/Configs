@@ -1,0 +1,25 @@
+ls
+cd
+ls
+cd kl
+kl
+doc
+cd Documents/Chess/Bulletin/Klub/
+ls
+cd ..
+ls
+cd Gambit/
+ls
+ls *.tex | entr latexmk -o udgave.pdf
+entr
+entr -h
+entr --help
+yt
+youtube-viewer
+ls
+ls
+pwd
+cd
+ls
+cd Allphone/
+ls

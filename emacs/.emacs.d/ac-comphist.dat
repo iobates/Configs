@@ -1,0 +1,18 @@
+((("latex-mode-map" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0 4])
+  ("defun" .
+   [1 0 0 0 0])
+  ("interactive" .
+   [1 0 0 0 0 0 0 0 0 0 0])
+  ("chord-define-key" .
+   [0 0 0 0 0 2 1 0 1 0 0 0 0 0 0 0])
+  ("tek-insert-table" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("tek-insert-chess" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1])
+  ("add-hook" .
+   [0 0 0 0 0 0 0 1])
+  ("latex-mode-hook" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("latex-setup" .
+   [1 0 0 0 0 0 0 0 0 0 0])))
