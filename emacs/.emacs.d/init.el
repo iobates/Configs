@@ -66,7 +66,21 @@ There are two things you can do about this warning:
 (use-package key-chord
   :ensure t)
 
+
+;; key-chord settings.
+
 (key-chord-mode 1)
+
+(defun config-bash ()
+  (interactive)
+  (find-file "/home/kinslayer/.bashrc"))
+
+(defun config-emacs ()
+  (interactive)
+  (find-file "/home/kinslayer/.emacs.d/init.el"))
+
+(key-chord-define global-map ",b" 'config-bash)
+(key-chord-define global-map ",e" 'config-emacs)
 
 ;; making key-chord play with latex
 
