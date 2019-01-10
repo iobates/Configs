@@ -108,6 +108,14 @@ There are two things you can do about this warning:
 
 ;; packages
 
+
+;; haskell-mode
+
+(use-package haskell-mode
+  :ensure t)
+
+;; try
+
 (use-package try
   :ensure t)
 
