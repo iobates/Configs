@@ -185,3 +185,7 @@ There are two things you can do about this warning:
 
 ;; No toolbar 
 (tool-bar-mode 0)
+
+;; keyboard mappings
+
+(define-key global-map (kbd "C-,") 'org-agenda)
