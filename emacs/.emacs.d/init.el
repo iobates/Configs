@@ -33,6 +33,7 @@ There are two things you can do about this warning:
 (package-initialize)
 
 
+
 ;; org config
 
 (org-babel-do-load-languages
@@ -66,7 +67,6 @@ There are two things you can do about this warning:
 (use-package key-chord
   :ensure t)
 
-
 ;; key-chord settings.
 
 (key-chord-mode 1)
@@ -94,7 +94,12 @@ There are two things you can do about this warning:
 
 (add-hook 'latex-mode-hook 'latex-setup)
 
+;; org-agenda
+
+(define-key org-mode-map (kbd "C-c a") 'org-agenda)
+
 ;; some settings
+
 
 (setq indent-tabs-mode nil)
 (setq custom-tab-width 2)
@@ -105,6 +110,13 @@ There are two things you can do about this warning:
 
 (use-package try
   :ensure t)
+
+;; magit
+
+(use-package magit
+  :ensure t
+  :config
+  (define-key global-map (kbd "C-.") 'magit-status))
 
 ;; htmlize
 
@@ -170,3 +182,6 @@ There are two things you can do about this warning:
 ;; theming
 
 (load-theme 'tsdh-dark)
+
+;; No toolbar 
+(tool-bar-mode 0)
