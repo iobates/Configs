@@ -116,7 +116,7 @@ There are two things you can do about this warning:
 (use-package magit
   :ensure t
   :config
-  (define-key global-map (kbd "C-.") 'magit-status))
+  (define-key global-map (kbd "C-.") 'magit-status)) ;; Prime key since I use dvorak on my keyboard
 
 ;; htmlize
 
