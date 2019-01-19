@@ -34,19 +34,30 @@ There are two things you can do about this warning:
 
 
 
+;; babel
+
+(defun org-babel-execute:chess (body params)
+  "Execute a block of Chess code with org-babel."
+  (message "executing Chess source code block")
+  (org-babel-eval "/home/kinslayer/Scripts/chess" body))
+
+
 ;; org config
 
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
-   (shell . t)))
+   (shell . t)
+   (latex . t)))
 
 ;; global keys
 
-(global-set-key (kbd "M-s") 'save-buffer)
+
 (global-set-key (kbd "<f5>") 'eval-buffer)
 
 ;; some functions to make latex simpler to work with, specific for my needs.
+
+ 
 
 (defun tek-insert-table ()
   (interactive)
@@ -108,6 +119,12 @@ There are two things you can do about this warning:
 
 ;; packages
 
+
+;; undo-tree
+
+(use-package undo-tree
+  :ensure t
+  :config (undo-tree-mode 1))
 
 ;; haskell-mode
 
