@@ -124,13 +124,13 @@ There are two things you can do about this warning:
 
 (use-package undo-tree
   :ensure t
-  :config (undo-tree-mode 1))
+  :init (global-undo-tree-mode))
 
 ;; haskell-mode
 
 (use-package haskell-mode
   :ensure t)
-
+;
 ;; try
 
 (use-package try
