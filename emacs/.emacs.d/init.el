@@ -99,9 +99,7 @@ There are two things you can do about this warning:
   (interactive)
   (key-chord-define latex-mode-map "ae" "{\\ae}")
   (key-chord-define latex-mode-map "/o" "{\\o}")
-  (key-chord-define latex-mode-map "aa" "{\\aa}")
-  (key-chord-define latex-mode-map ",t" 'tek-insert-table)
-  (key-chord-define latex-mode-map ",c" 'tek-insert-chess))
+  (key-chord-define latex-mode-map "aa" "{\\aa}"))
 
 (add-hook 'latex-mode-hook 'latex-setup)
 
@@ -118,6 +116,12 @@ There are two things you can do about this warning:
 (setq-default python-indent-offset custom-tab-width)
 
 ;; packages
+
+
+;; lua-mode
+
+(use-package lua-mode
+  :ensure t)
 
 
 ;; undo-tree
