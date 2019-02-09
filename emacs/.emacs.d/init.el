@@ -41,7 +41,6 @@ There are two things you can do about this warning:
   (message "executing Chess source code block")
   (org-babel-eval "/home/kinslayer/Scripts/chess" body))
 
-
 ;; org config
 
 (org-babel-do-load-languages
@@ -118,11 +117,32 @@ There are two things you can do about this warning:
 ;; packages
 
 
+;; god-mode
+
+(use-package god-mode
+  :ensure t
+  :config
+  (global-set-key (kbd "<escape>") 'god-local-mode)) ; awesome mode.
+
+;; ace-jump-mode
+
+(use-package windmove
+  :ensure t
+  :init
+  (define-key global-map (kbd "<down>") 'windmove-down)
+  (define-key global-map (kbd "<left>") 'windmove-left)
+  (define-key global-map (kbd "<right>") 'windmove-right)
+  (define-key global-map (kbd "<up>") 'windmove-up))
+
+;; mingus
+
+(use-package mingus
+  :ensure t)
+
 ;; lua-mode
 
 (use-package lua-mode
   :ensure t)
-
 
 ;; undo-tree
 
@@ -209,12 +229,10 @@ There are two things you can do about this warning:
     (yas-global-mode 1)))
 
 ;; theming
-
 (load-theme 'tsdh-dark)
 
 ;; No toolbar 
 (tool-bar-mode 0)
 
 ;; keyboard mappings
-
 (define-key global-map (kbd "C-,") 'org-agenda)
