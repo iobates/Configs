@@ -5,14 +5,13 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org))))
+    (emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
@@ -32,6 +31,7 @@ There are two things you can do about this warning:
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 
 ;; babel
@@ -39,7 +39,7 @@ There are two things you can do about this warning:
 (defun org-babel-execute:chess (body params)
   "Execute a block of Chess code with org-babel."
   (message "executing Chess source code block")
-  (org-babel-eval "/home/kinslayer/Scripts/chess" body))
+  (org-babel-eval "/home/kinslayer/Scripts/chess" body)) ; needs a bit of work to do the correct thing.
 
 ;; org config
 
@@ -73,6 +73,14 @@ There are two things you can do about this warning:
 
 
 ;; setting up key-chord
+
+(use-package exwm
+  :ensure t
+  :config
+  (require 'exwm-config)
+  (require 'exwm-systemtray)
+  (exwm-config-default)
+  (exwm-systemtray-enable))
 
 (use-package key-chord
   :ensure t)
@@ -115,7 +123,6 @@ There are two things you can do about this warning:
 (setq-default python-indent-offset custom-tab-width)
 
 ;; packages
-
 
 ;; god-mode
 
@@ -206,11 +213,6 @@ There are two things you can do about this warning:
   (progn
     (global-set-key (kbd "C-s") 'swiper)))
 
-;; color-theme
-
-(use-package color-theme
-  :ensure t)
-
 ;; auto-complete
 
 (use-package auto-complete
@@ -236,3 +238,35 @@ There are two things you can do about this warning:
 
 ;; keyboard mappings
 (define-key global-map (kbd "C-,") 'org-agenda)
+
+(global-set-key (kbd "s-SPC") 'dmenu)
+(display-time-mode 1)
+
+
+;; Just nice for resizing.
+(global-set-key (kbd "<C-up>") 'shrink-window)
+(global-set-key (kbd "<C-down>") 'enlarge-window)
+(global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
+(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+
+
+
+(setq exec-path (append exec-path '("/usr/bin")))
+(require 'emms-setup)
+(require 'emms-player-mplayer)
+(emms-standard)
+(emms-default-players)
+(define-emms-simple-player mplayer '(file url)
+      (regexp-opt '(".ogg" ".mp3" ".wav" ".mpg" ".mpeg" ".wmv" ".wma"
+                    ".mov" ".avi" ".divx" ".ogm" ".asf" ".mkv" "http://" "mms://"
+                    ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
+      "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen")
+
+
+
+(defun music-next
+(global-set-key (kbd "C-c m p") 'emms-previous)
+(global-set-key (kbd "C-c m n") 'emms-next)
+(global-set-key (kbd "C-c m .") 'emms-pause)
+(global-set-key (kbd "C-c m s") 'emms-stop)
+(global-set-key (kbd "C-c m b") 'emms)
