@@ -5,7 +5,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org))))
+    (password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
+ '(transmission-refresh-modes (quote (transmission-mode transmission-info-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -41,14 +42,33 @@ There are two things you can do about this warning:
   (message "executing Chess source code block")
   (org-babel-eval "/home/kinslayer/Scripts/chess" body)) ; needs a bit of work to do the correct thing.
 
+(setq org-babel-python-command "ipython3 --no-banner --classic --no-confirm-exit")
+
+(defun org-babel-execute:lisp (body params)
+  "Execute lisp"
+  (message "execute lisp source code block")
+  (org-babel-eval "/usr/bin/sbcl" body))
+
+(defun org-babel-execute:forth (body params)
+  "Execute lisp"
+  (message "execute lisp source code block")
+  (org-babel-eval "/usr/bin/gforth" body))
+
+
 ;; org config
 
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
    (shell . t)
-   (latex . t)))
+   (latex . t)
+   (lisp . t)))
 
+
+;; setup slime
+(use-package slime
+  :ensure t)
+ 
 ;; global keys
 
 
@@ -82,7 +102,13 @@ There are two things you can do about this warning:
   (exwm-config-default)
   (exwm-systemtray-enable))
 
+;; key-chord
+
 (use-package key-chord
+  :ensure t)
+
+;; forth-mode
+(use-package forth-mode
   :ensure t)
 
 ;; key-chord settings.
@@ -242,6 +268,9 @@ There are two things you can do about this warning:
 (global-set-key (kbd "s-SPC") 'dmenu)
 (display-time-mode 1)
 
+;; Unbind C-z to not get a suspended emacs.
+(global-unset-key (kbd "C-z"))
+
 
 ;; Just nice for resizing.
 (global-set-key (kbd "<C-up>") 'shrink-window)
@@ -250,7 +279,7 @@ There are two things you can do about this warning:
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
 
 
-
+;; Some setup for emms
 (setq exec-path (append exec-path '("/usr/bin")))
 (require 'emms-setup)
 (require 'emms-player-mplayer)
@@ -262,11 +291,10 @@ There are two things you can do about this warning:
                     ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
       "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen")
 
-
-
-(defun music-next
 (global-set-key (kbd "C-c m p") 'emms-previous)
 (global-set-key (kbd "C-c m n") 'emms-next)
 (global-set-key (kbd "C-c m .") 'emms-pause)
 (global-set-key (kbd "C-c m s") 'emms-stop)
 (global-set-key (kbd "C-c m b") 'emms)
+
+
