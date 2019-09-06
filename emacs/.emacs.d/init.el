@@ -3,9 +3,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(elfeed-feeds
+   (quote
+    ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g"
+     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g")
+     ("https://www.youtube.com/feeds/videos.xml?channel_ide=UCxwcmRAmBRzZMNS37dCgmHA"))))
  '(package-selected-packages
    (quote
-    (password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
+    (btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages symon w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
+ '(symon-mode t)
  '(transmission-refresh-modes (quote (transmission-mode transmission-info-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -33,6 +39,13 @@ There are two things you can do about this warning:
 (package-initialize)
 
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
+(if (not (package-installed-p 'use-package))
+    (package-install 'use-package))
+    
+
+(load "server")
+(unless (server-running-p) (server-start))
 
 
 ;; babel
@@ -74,9 +87,30 @@ There are two things you can do about this warning:
 
 (global-set-key (kbd "<f5>") 'eval-buffer)
 
+
+(global-set-key (kbd "C-c m p") 'emms-previous)
+(global-set-key (kbd "C-c m n") 'emms-next)
+(global-set-key (kbd "C-c m .") 'emms-pause)
+(global-set-key (kbd "C-c m s") 'emms-stop)
+(global-set-key (kbd "C-c m f") 'emms-play-file)
+(global-set-key (kbd "C-c m b") 'emms)
+(global-set-key (kbd "C-c m d") 'emms-add-directory)
+(global-set-key (kbd "C-c m a") 'emms-add-file)
+(global-set-key (kbd "C-c e s") 'eshell)
+(global-set-key (kbd "C-c e i") 'ielm)
+(global-set-key (kbd "C-c t a") 'transmission-add)
+(global-set-key (kbd "C-c t s") 'transmission)
+
+(defun show-brave ()
+  (interactive)
+  (switch-to-buffer "Brave-browser"))
+
+(global-set-key (kbd "C-c b o") 'show-brave)
+
 ;; some functions to make latex simpler to work with, specific for my needs.
 
- 
+
+
 
 (defun tek-insert-table ()
   (interactive)
@@ -91,8 +125,27 @@ There are two things you can do about this warning:
 
 }"))
 
+;; setup paredit
 
-;; setting up key-chord
+(use-package paredit
+  :ensure t
+  :config
+  (paredit-mode t))
+
+(paredit-mode 1)
+
+
+;; notmuch
+
+(use-package notmuch
+  :ensure t)
+
+;; w3m in emacs.
+
+(use-package w3m
+  :ensure t)
+
+;; exwm the bestest window manager.
 
 (use-package exwm
   :ensure t
@@ -102,12 +155,27 @@ There are two things you can do about this warning:
   (exwm-config-default)
   (exwm-systemtray-enable))
 
+;; ace-window
+
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c a j") 'ace-window))
+
 ;; key-chord
 
 (use-package key-chord
   :ensure t)
 
+;; elfeed
+
+(use-package elfeed
+  :commands (elfeed)
+  :bind ((:map elfeed-show-mode-map
+	       ("p" . browse-url-mpv-open))))
+
 ;; forth-mode
+
 (use-package forth-mode
   :ensure t)
 
@@ -167,10 +235,10 @@ There are two things you can do about this warning:
   (define-key global-map (kbd "<right>") 'windmove-right)
   (define-key global-map (kbd "<up>") 'windmove-up))
 
-;; mingus
 
-(use-package mingus
-  :ensure t)
+
+k
+
 
 ;; lua-mode
 
@@ -198,7 +266,8 @@ There are two things you can do about this warning:
 (use-package magit
   :ensure t
   :config
-  (define-key global-map (kbd "C-.") 'magit-status)) ;; Prime key since I use dvorak on my keyboard
+  (define-key global-map (kbd "C-.") 'magit-status))
+
 
 ;; htmlize
 
@@ -238,6 +307,18 @@ There are two things you can do about this warning:
   :config
   (progn
     (global-set-key (kbd "C-s") 'swiper)))
+
+;; symon
+
+(use-package symon
+  :ensure t
+  :config
+  (symon-mode 1))
+
+;; system-packages
+
+(use-package system-packages
+  :ensure t)
 
 ;; auto-complete
 
@@ -291,10 +372,48 @@ There are two things you can do about this warning:
                     ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
       "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen")
 
-(global-set-key (kbd "C-c m p") 'emms-previous)
-(global-set-key (kbd "C-c m n") 'emms-next)
-(global-set-key (kbd "C-c m .") 'emms-pause)
-(global-set-key (kbd "C-c m s") 'emms-stop)
-(global-set-key (kbd "C-c m b") 'emms)
 
+(global-set-key (kbd "C-c i s") 'erc)
+
+(add-hook 'dired-mode-hook
+	  (lambda () (hl-line-mode))) ; the lambda is necessary
+
+
+(defun yt-download-url (url)
+  (interactive)
+  (shell-command (concat "sh ~/ytdl.sh " url)))
+
+(setq browse-url-browser-function 'yt-download-url)
+
+(defun show-msg-after-timer ()
+  "Show a message after timer expires. Based on run-at-time and can understand time like it can."
+  (interactive)
+  (let* ((msg-to-show (read-string "Enter msg to show: "))
+         (time-duration (read-string "Time? ")))
+    (message time-duration)
+    (run-at-time time-duration nil #'message-box msg-to-show)))
+
+(global-set-key (kbd "C-c c s") 'show-msg-after-timer)
+
+
+(defvar yt-search-url "https://www.youtube.com/results?search_query=")
+
+(defun yt-search ()
+  (interactive)
+  (let* ((st (read-string "Search yt for? ")))
+    (w3m (concat yt-search-url st) nil t)))
+
+(define-key w3m-mode-map (kbd "s-y") 'yt-search)
+
+(define-key w3m-mode-map (kbd "s-c") 'w3m-lnum-print-this-url)
+
+; robonuggie https://www.youtube.com/feeds/videos.xml?channel_id=UCxwcmRAmBRzZMNS37dCgmHA
+
+
+(defun browse-url-mpv-open (url &optional ignored)
+  "Pass to mpv"
+  (interactive (browse-url-interactive-arg "URL: "))
+  (call-process "mpv" nil 0 nil url))
+
+(setq browse-url-browser-function 'browse-url-xdg-open)
 
