@@ -3,15 +3,25 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(btc-ticker-mode t)
  '(elfeed-feeds
    (quote
     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g"
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g")
      ("https://www.youtube.com/feeds/videos.xml?channel_ide=UCxwcmRAmBRzZMNS37dCgmHA"))))
+ '(notmuch-saved-searches
+   (quote
+    ((:name "inbox" :query "tag:inbox" :key "i")
+     (:name "unread" :query "tag:unread" :key "u" :sort-order newest-first)
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "sent" :query "tag:sent" :key "t")
+     (:name "drafts" :query "tag:draft" :key "d")
+     (:name "all mail" :query "*" :key "a")
+     (:name "date-search" :query "date:08.09.19" :sort-order newest-first))))
  '(package-selected-packages
    (quote
-    (btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages symon w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
- '(symon-mode t)
+    (btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
+ '(send-mail-function (quote smtpmail-send-it))
  '(transmission-refresh-modes (quote (transmission-mode transmission-info-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -38,15 +48,19 @@ There are two things you can do about this warning:
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
+(load "smtp.el")
+(load "nntp.el")
+
+
+(paredit-mode t)
+
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 (if (not (package-installed-p 'use-package))
     (package-install 'use-package))
-    
 
 (load "server")
 (unless (server-running-p) (server-start))
-
 
 ;; babel
 
@@ -81,12 +95,18 @@ There are two things you can do about this warning:
 ;; setup slime
 (use-package slime
   :ensure t)
- 
+
+
+
 ;; global keys
 
+(global-unset-key (kbd "<f1>"))
+(global-set-key (kbd "<f1>") 'ansi-term)
 
 (global-set-key (kbd "<f5>") 'eval-buffer)
 
+(global-set-key (kbd "C-c n s") 'notmuch-search)
+(global-set-key (kbd "C-c n h") 'notmuch)
 
 (global-set-key (kbd "C-c m p") 'emms-previous)
 (global-set-key (kbd "C-c m n") 'emms-next)
@@ -96,10 +116,17 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-c m b") 'emms)
 (global-set-key (kbd "C-c m d") 'emms-add-directory)
 (global-set-key (kbd "C-c m a") 'emms-add-file)
+(global-set-key (kbd "C-c m r") 'emms-toggle-repeat-playlist)
+
 (global-set-key (kbd "C-c e s") 'eshell)
+
 (global-set-key (kbd "C-c e i") 'ielm)
+
 (global-set-key (kbd "C-c t a") 'transmission-add)
 (global-set-key (kbd "C-c t s") 'transmission)
+
+(global-set-key (kbd "<XF86AudioRaiseVolume>") 'emms-volume-raise)
+(global-set-key (kbd "<XF86AudioLowerVolume>") 'emms-volume-lower)
 
 (defun show-brave ()
   (interactive)
@@ -235,11 +262,6 @@ There are two things you can do about this warning:
   (define-key global-map (kbd "<right>") 'windmove-right)
   (define-key global-map (kbd "<up>") 'windmove-up))
 
-
-
-k
-
-
 ;; lua-mode
 
 (use-package lua-mode
@@ -308,13 +330,6 @@ k
   (progn
     (global-set-key (kbd "C-s") 'swiper)))
 
-;; symon
-
-(use-package symon
-  :ensure t
-  :config
-  (symon-mode 1))
-
 ;; system-packages
 
 (use-package system-packages
@@ -379,11 +394,11 @@ k
 	  (lambda () (hl-line-mode))) ; the lambda is necessary
 
 
-(defun yt-download-url (url)
+(defun yt-download-url ()
   (interactive)
-  (shell-command (concat "sh ~/ytdl.sh " url)))
+  (let* ((term (read-string "Url: ")))
+    (shell-command (shell-quote-argument (concat "sh ~/ytdl.sh " term)))))
 
-(setq browse-url-browser-function 'yt-download-url)
 
 (defun show-msg-after-timer ()
   "Show a message after timer expires. Based on run-at-time and can understand time like it can."
@@ -407,9 +422,6 @@ k
 
 (define-key w3m-mode-map (kbd "s-c") 'w3m-lnum-print-this-url)
 
-; robonuggie https://www.youtube.com/feeds/videos.xml?channel_id=UCxwcmRAmBRzZMNS37dCgmHA
-
-
 (defun browse-url-mpv-open (url &optional ignored)
   "Pass to mpv"
   (interactive (browse-url-interactive-arg "URL: "))
@@ -417,3 +429,13 @@ k
 
 (setq browse-url-browser-function 'browse-url-xdg-open)
 
+(define-key global-map (kbd "C-c y d") 'my/yt-download-url)
+
+(setq save-interprogram-paste-before-kill t)
+(setq yank-pop-change-selection t)
+
+(defun my/yt-download-url ()
+  "Download a link with youtube-dl"
+  (interactive)
+  (let* ((url (read-string "Url: ")))
+    (call-process "~/bin/ytdl.sh" nil 0 nil url)))
