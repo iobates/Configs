@@ -8,7 +8,9 @@
    (quote
     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g"
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g")
-     ("https://www.youtube.com/feeds/videos.xml?channel_ide=UCxwcmRAmBRzZMNS37dCgmHA"))))
+     ("https://www.youtube.com/feeds/videos.xml?channel_ide=UCxwcmRAmBRzZMNS37dCgmHA")
+     ("https://brandonsanderson.com/feed/"))))
+ '(line-number-mode nil)
  '(notmuch-saved-searches
    (quote
     ((:name "inbox" :query "tag:inbox" :key "i")
@@ -20,8 +22,10 @@
      (:name "date-search" :query "date:08.09.19" :sort-order newest-first))))
  '(package-selected-packages
    (quote
-    (btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
+    (rust-mode ob-rust circe ledger-mode dired+ spacemacs-theme btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
  '(send-mail-function (quote smtpmail-send-it))
+ '(smtpmail-smtp-server "smtp.yandex.com")
+ '(smtpmail-smtp-service 587)
  '(transmission-refresh-modes (quote (transmission-mode transmission-info-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -50,7 +54,7 @@ There are two things you can do about this warning:
 
 (load "smtp.el")
 (load "nntp.el")
-
+(load "erc.el")
 
 (paredit-mode t)
 
@@ -77,10 +81,14 @@ There are two things you can do about this warning:
   (org-babel-eval "/usr/bin/sbcl" body))
 
 (defun org-babel-execute:forth (body params)
-  "Execute lisp"
-  (message "execute lisp source code block")
+  "Execute Forth"
+  (message "execute forth source code block")
   (org-babel-eval "/usr/bin/gforth" body))
 
+;; ob-rust
+
+(use-package ob-rust
+  :ensure t)
 
 ;; org config
 
@@ -96,18 +104,14 @@ There are two things you can do about this warning:
 (use-package slime
   :ensure t)
 
-
-
 ;; global keys
 
 (global-unset-key (kbd "<f1>"))
 (global-set-key (kbd "<f1>") 'ansi-term)
-
 (global-set-key (kbd "<f5>") 'eval-buffer)
-
 (global-set-key (kbd "C-c n s") 'notmuch-search)
 (global-set-key (kbd "C-c n h") 'notmuch)
-
+(global-set-key (kbd "C-c n m") 'message-mail)
 (global-set-key (kbd "C-c m p") 'emms-previous)
 (global-set-key (kbd "C-c m n") 'emms-next)
 (global-set-key (kbd "C-c m .") 'emms-pause)
@@ -117,14 +121,10 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-c m d") 'emms-add-directory)
 (global-set-key (kbd "C-c m a") 'emms-add-file)
 (global-set-key (kbd "C-c m r") 'emms-toggle-repeat-playlist)
-
 (global-set-key (kbd "C-c e s") 'eshell)
-
 (global-set-key (kbd "C-c e i") 'ielm)
-
 (global-set-key (kbd "C-c t a") 'transmission-add)
 (global-set-key (kbd "C-c t s") 'transmission)
-
 (global-set-key (kbd "<XF86AudioRaiseVolume>") 'emms-volume-raise)
 (global-set-key (kbd "<XF86AudioLowerVolume>") 'emms-volume-lower)
 
@@ -135,9 +135,6 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-c b o") 'show-brave)
 
 ;; some functions to make latex simpler to work with, specific for my needs.
-
-
-
 
 (defun tek-insert-table ()
   (interactive)
@@ -152,6 +149,12 @@ There are two things you can do about this warning:
 
 }"))
 
+
+;; linum
+(linum-mode 1)
+(column-number-mode 1)
+
+
 ;; setup paredit
 
 (use-package paredit
@@ -161,6 +164,9 @@ There are two things you can do about this warning:
 
 (paredit-mode 1)
 
+;; Save window config.
+;; winner-mode
+(winner-mode 1) ; C-c <- and C-c -> to move between configs.
 
 ;; notmuch
 
@@ -237,8 +243,7 @@ There are two things you can do about this warning:
 
 ;; some settings
 
-
-(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 (setq custom-tab-width 2)
 
 (setq-default python-indent-offset custom-tab-width)
@@ -335,6 +340,11 @@ There are two things you can do about this warning:
 (use-package system-packages
   :ensure t)
 
+;; ledger
+
+(use-package ledger-mode
+  :ensure t)
+
 ;; auto-complete
 
 (use-package auto-complete
@@ -351,9 +361,6 @@ There are two things you can do about this warning:
   :init
   (progn
     (yas-global-mode 1)))
-
-;; theming
-(load-theme 'tsdh-dark)
 
 ;; No toolbar 
 (tool-bar-mode 0)
@@ -430,7 +437,7 @@ There are two things you can do about this warning:
 (setq browse-url-browser-function 'browse-url-xdg-open)
 
 (define-key global-map (kbd "C-c y d") 'my/yt-download-url)
-
+(define-key global-map (kbd "C-c y p") 'my/yt-download-pl)
 (setq save-interprogram-paste-before-kill t)
 (setq yank-pop-change-selection t)
 
@@ -439,3 +446,11 @@ There are two things you can do about this warning:
   (interactive)
   (let* ((url (read-string "Url: ")))
     (call-process "~/bin/ytdl.sh" nil 0 nil url)))
+
+(defun my/yt-download-pl ()
+  "Download a Youtube Playlist"
+  (interactive)
+  (let ((url (read-string "Url> ")))
+    (call-process "~/bin/ytpl.sh" nil 0 nil url)))
+
+
