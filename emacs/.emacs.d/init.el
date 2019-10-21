@@ -5,28 +5,25 @@
  ;; If there is more than one, they won't work right.
  '(btc-ticker-mode t)
  '(elfeed-feeds
-   (quote
-    ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g"
+   '("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g"
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCDEtZ7AKmwS0_GNJog01D2g")
      ("https://www.youtube.com/feeds/videos.xml?channel_ide=UCxwcmRAmBRzZMNS37dCgmHA")
-     ("https://brandonsanderson.com/feed/"))))
+     ("https://brandonsanderson.com/feed/")))
  '(line-number-mode nil)
  '(notmuch-saved-searches
-   (quote
-    ((:name "inbox" :query "tag:inbox" :key "i")
+   '((:name "inbox" :query "tag:inbox" :key "i")
      (:name "unread" :query "tag:unread" :key "u" :sort-order newest-first)
      (:name "flagged" :query "tag:flagged" :key "f")
      (:name "sent" :query "tag:sent" :key "t")
      (:name "drafts" :query "tag:draft" :key "d")
      (:name "all mail" :query "*" :key "a")
-     (:name "date-search" :query "date:08.09.19" :sort-order newest-first))))
+     (:name "date-search" :query "date:08.09.19" :sort-order newest-first)))
  '(package-selected-packages
-   (quote
-    (rust-mode ob-rust circe ledger-mode dired+ spacemacs-theme btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org)))
- '(send-mail-function (quote smtpmail-send-it))
+   '(elixir-mode elm-mode scribble-mode pollen-mode racket-mode racket hy-mode abyss-theme rust-mode ob-rust circe ledger-mode dired+ spacemacs-theme btc-ticker calender-remind notmuch paredit wanderlust\.el wanderlust deadgrep elfeed-org system-packages w3m ace-window password-store helm-pass forth-mode emms-player-simple-mpv emms emms-mode-line-cycle transmission dmenu exwm-x exwm htmlize ob-bash yasnippet key-chord dired-explorer dired-open dired-ranger org))
+ '(send-mail-function 'smtpmail-send-it)
  '(smtpmail-smtp-server "smtp.yandex.com")
  '(smtpmail-smtp-service 587)
- '(transmission-refresh-modes (quote (transmission-mode transmission-info-mode))))
+ '(transmission-refresh-modes '(transmission-mode transmission-info-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -52,11 +49,11 @@ There are two things you can do about this warning:
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (package-initialize)
 
+(setq auth-source "~/.authinfo.gpg")
+
 (load "smtp.el")
 (load "nntp.el")
 (load "erc.el")
-
-(paredit-mode t)
 
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
@@ -85,6 +82,8 @@ There are two things you can do about this warning:
   (message "execute forth source code block")
   (org-babel-eval "/usr/bin/gforth" body))
 
+
+
 ;; ob-rust
 
 (use-package ob-rust
@@ -97,9 +96,14 @@ There are two things you can do about this warning:
  '((python . t)
    (shell . t)
    (latex . t)
-   (lisp . t)))
+   (lisp . t)
+   (hy . t )
+   (clojure . t)))
 
+;; paredit & show parens
 
+(paredit-mode 1)
+(show-paren-mode 1)
 ;; setup slime
 (use-package slime
   :ensure t)
@@ -127,12 +131,16 @@ There are two things you can do about this warning:
 (global-set-key (kbd "C-c t s") 'transmission)
 (global-set-key (kbd "<XF86AudioRaiseVolume>") 'emms-volume-raise)
 (global-set-key (kbd "<XF86AudioLowerVolume>") 'emms-volume-lower)
+(global-set-key (kbd "C-c p n") 'my/paredit-on)
+(global-set-key (kbd "C-c p f") 'my/paredit-off)
 
-(defun show-brave ()
+(defun my/paredit-off ()
   (interactive)
-  (switch-to-buffer "Brave-browser"))
+  (paredit-mode 0))
 
-(global-set-key (kbd "C-c b o") 'show-brave)
+(defun my/paredit-on ()
+  (interactive)
+  (paredit-mode 1))
 
 ;; some functions to make latex simpler to work with, specific for my needs.
 
@@ -149,69 +157,6 @@ There are two things you can do about this warning:
 
 }"))
 
-
-;; linum
-(linum-mode 1)
-(column-number-mode 1)
-
-
-;; setup paredit
-
-(use-package paredit
-  :ensure t
-  :config
-  (paredit-mode t))
-
-(paredit-mode 1)
-
-;; Save window config.
-;; winner-mode
-(winner-mode 1) ; C-c <- and C-c -> to move between configs.
-
-;; notmuch
-
-(use-package notmuch
-  :ensure t)
-
-;; w3m in emacs.
-
-(use-package w3m
-  :ensure t)
-
-;; exwm the bestest window manager.
-
-(use-package exwm
-  :ensure t
-  :config
-  (require 'exwm-config)
-  (require 'exwm-systemtray)
-  (exwm-config-default)
-  (exwm-systemtray-enable))
-
-;; ace-window
-
-(use-package ace-window
-  :ensure t
-  :config
-  (global-set-key (kbd "C-c a j") 'ace-window))
-
-;; key-chord
-
-(use-package key-chord
-  :ensure t)
-
-;; elfeed
-
-(use-package elfeed
-  :commands (elfeed)
-  :bind ((:map elfeed-show-mode-map
-	       ("p" . browse-url-mpv-open))))
-
-;; forth-mode
-
-(use-package forth-mode
-  :ensure t)
-
 ;; key-chord settings.
 
 (key-chord-mode 1)
@@ -223,6 +168,9 @@ There are two things you can do about this warning:
 (defun config-emacs ()
   (interactive)
   (find-file "/home/kinslayer/.emacs.d/init.el"))
+
+(global-set-key (kbd "C-c c e") 'config-emacs)
+(global-set-key (kbd "C-c c b") 'config-bash)
 
 (key-chord-define global-map ",b" 'config-bash)
 (key-chord-define global-map ",e" 'config-emacs)
@@ -250,6 +198,76 @@ There are two things you can do about this warning:
 
 ;; packages
 
+;; linum
+
+(linum-mode 1)
+(column-number-mode 1)
+
+;; setup paredit
+
+(use-package paredit
+  :ensure t
+  :config
+  (paredit-mode 1))
+
+;; scroll-bar = nil
+
+(scroll-bar-mode 0)
+
+;; Save window config.
+;; winner-mode
+(winner-mode 1) ; C-c <- and C-c -> to move between configs.
+
+;; racket
+
+(use-package racket-mode
+  :ensure t)
+
+
+;; notmuch
+
+(use-package notmuch
+  :ensure t)
+
+;; w3m in emacs.
+
+(use-package w3m
+  :ensure t)
+
+;; ;; exwm the bestest window manager.
+
+;; (use-package exwm
+;;   :ensure t
+;;   :config
+;;   (require 'exwm-config)
+;;   (require 'exwm-systemtray)
+;;   (exwm-config-default)
+;;   (exwm-systemtray-enable))
+
+;; ace-window
+
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c a j") 'ace-window))
+
+;; key-chord
+
+(use-package key-chord
+  :ensure t)
+
+;; elfeed
+
+(use-package elfeed
+  :commands (elfeed)
+  :bind ((:map elfeed-show-mode-map
+	       ("p" . browse-url-mpv-open))))
+
+;; forth-mode
+
+(use-package forth-mode
+  :ensure t)
+
 ;; god-mode
 
 (use-package god-mode
@@ -267,22 +285,25 @@ There are two things you can do about this warning:
   (define-key global-map (kbd "<right>") 'windmove-right)
   (define-key global-map (kbd "<up>") 'windmove-up))
 
-;; lua-mode
-
-(use-package lua-mode
-  :ensure t)
-
 ;; undo-tree
 
 (use-package undo-tree
   :ensure t
   :init (global-undo-tree-mode))
 
-;; haskell-mode
+  ;; haskell-mode
 
 (use-package haskell-mode
   :ensure t)
-;
+;; clojure-mode
+
+(use-package clojure-mode
+  :ensure t)
+
+;; cider
+(use-package cider
+  :ensure t)
+
 ;; try
 
 (use-package try
@@ -362,6 +383,32 @@ There are two things you can do about this warning:
   (progn
     (yas-global-mode 1)))
 
+;; ob-hy
+
+(use-package ob-hy
+  :ensure t)
+
+;; elixir-mode
+
+(use-package elixir-mode
+  :ensure t)
+
+
+;; elm-mode
+
+(use-package elm-mode
+  :ensure t)
+
+;; pollen-mode
+
+(use-package pollen-mode
+  :ensure t)
+
+;; scribble-mode
+
+(use-package scribble-mode
+  :ensure t)
+
 ;; No toolbar 
 (tool-bar-mode 0)
 
@@ -374,13 +421,11 @@ There are two things you can do about this warning:
 ;; Unbind C-z to not get a suspended emacs.
 (global-unset-key (kbd "C-z"))
 
-
 ;; Just nice for resizing.
 (global-set-key (kbd "<C-up>") 'shrink-window)
 (global-set-key (kbd "<C-down>") 'enlarge-window)
 (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
-
 
 ;; Some setup for emms
 (setq exec-path (append exec-path '("/usr/bin")))
@@ -394,18 +439,15 @@ There are two things you can do about this warning:
                     ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
       "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen")
 
-
 (global-set-key (kbd "C-c i s") 'erc)
 
 (add-hook 'dired-mode-hook
 	  (lambda () (hl-line-mode))) ; the lambda is necessary
 
-
 (defun yt-download-url ()
   (interactive)
   (let* ((term (read-string "Url: ")))
     (shell-command (shell-quote-argument (concat "sh ~/ytdl.sh " term)))))
-
 
 (defun show-msg-after-timer ()
   "Show a message after timer expires. Based on run-at-time and can understand time like it can."
@@ -416,7 +458,6 @@ There are two things you can do about this warning:
     (run-at-time time-duration nil #'message-box msg-to-show)))
 
 (global-set-key (kbd "C-c c s") 'show-msg-after-timer)
-
 
 (defvar yt-search-url "https://www.youtube.com/results?search_query=")
 
@@ -453,4 +494,14 @@ There are two things you can do about this warning:
   (let ((url (read-string "Url> ")))
     (call-process "~/bin/ytpl.sh" nil 0 nil url)))
 
+(put 'upcase-region 'disabled nil)
 
+;; define a function to load a color-theme.
+;; color-theme
+
+(color-theme-initialize)
+
+(color-theme-dark-blue)
+;; (color-theme-calm-forest)
+;; (color-theme-classic)
+;; (color-theme-goldenrod)
